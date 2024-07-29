@@ -1,0 +1,58 @@
+version: '3.8'
+
+volumes:
+  bird:
+    name: bird
+
+services:
+  bird:
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+        reservations:
+          memory: 20M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+    container_name: bird
+    build:
+      context: bird/
+      dockerfile: Dockerfile
+      no_cache: true
+    image: rzolotuhin/bird
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./bird/bird.conf:/etc/bird.conf
+      - bird:/run
+    ports:
+      - 179:179/tcp
+    depends_on:
+      bird_ru_subnet_generator:
+        condition: service_started
+
+  bird_ru_subnet_generator:
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+    container_name: bird_ru_subnet_generator
+    build:
+      context: generator/
+      dockerfile: Dockerfile
+      no_cache: true
+    image: rzolotuhin/bird_ru_subnet_generator
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - bird:/run
+    environment:
+      - force=true
+      - list_path=/run/ru-subnet.list
+      - bird_unix_soket_path=/run/bird.ctl
