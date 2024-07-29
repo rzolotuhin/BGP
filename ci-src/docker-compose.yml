@@ -55,4 +55,4 @@ services:
     environment:
       - force=true
       - list_path=/run/ru-subnet.list
-      - bird_unix_soket_path=/run/bird.ctl
+      - bird_unix_socket_path=/run/bird.ctl

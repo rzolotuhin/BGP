@@ -27,7 +27,7 @@ type ResourceList struct {
 var listPath = tools.GetEnvDefault("list_path", "ru-subnet.list")
 
 func main() {
-	bird.UnixSocketPath = tools.GetEnvDefault("bird_unix_soket_path", "/run/bird/bird.ctl")
+	bird.UnixSocketPath = tools.GetEnvDefault("bird_unix_socket_path", "/run/bird/bird.ctl")
 
 	sleep := time.NewTicker(6 * time.Hour)
 	c := make(chan bool, 1)
