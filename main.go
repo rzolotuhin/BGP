@@ -113,8 +113,8 @@ func UpdateList() error {
 			if a1 != nil && a2 != nil {
 				list, err := tools.IpRangeToCIDR(a1.String(), a2.String())
 				if err == nil {
-					for _, sublen := range list {
-						_, err := fmt.Fprintf(f, "route %s unreachable;\n", sublen)
+					for _, subnet := range list {
+						_, err := fmt.Fprintf(f, "route %s unreachable;\n", subnet)
 						if err != nil {
 							return err
 						}
