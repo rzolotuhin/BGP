@@ -29,7 +29,7 @@ var listPath = tools.GetEnvDefault("list_path", "ru-subnet.list")
 func main() {
 	bird.UnixSocketPath = tools.GetEnvDefault("bird_unix_socket_path", "/run/bird/bird.ctl")
 
-	sleep := time.NewTicker(6 * time.Hour)
+	sleep := time.NewTicker(24 * time.Hour)
 	c := make(chan bool, 1)
 
 	c <- tools.GetEnvBool("force")
