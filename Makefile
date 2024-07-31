@@ -1,6 +1,7 @@
 GOBASE=$(shell pwd)
 GOBIN=$(GOBASE)/ci-src/generator/bin
-GOARCH=amd64
+GOARCH=amd64 arm64
+DOCKER_HUB_REPO=rzolotuhin
 
 MAKEFLAGS+="--silent"
 
@@ -9,7 +10,10 @@ download:
 
 build compile: clean download
 	@mkdir -p ${GOBIN}
-	env GOOS=linux GOARCH=${GOARCH} go build -o ${GOBIN}/generator_${GOARCH}_linux
+	for arc in ${GOARCH}; do \
+		echo " - building for architecture $${arc} "; \
+		env GOOS=linux GOARCH=$${arc} go build -o ${GOBIN}/generator_$${arc}_linux; \
+	done
 
 run:
 	go run main.go
@@ -23,3 +27,8 @@ docker: compile
 	docker compose rm --stop --force && \
 	docker compose build && \
 	docker compose up -d
+
+docker-multi-arc:
+	docker buildx create --name=multi-arc --node=multi-arc --platform=linux/amd64,linux/arm64
+	docker buildx build --builder=multi-arc --platform=linux/amd64,linux/arm64 --push --tag ${DOCKER_HUB_REPO}/bird_ru_subnet_generator ci-src/generator/
+	docker buildx build --builder=multi-arc --platform=linux/amd64,linux/arm64 --push --tag ${DOCKER_HUB_REPO}/bird ci-src/bird/
